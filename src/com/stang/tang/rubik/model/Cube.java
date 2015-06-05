@@ -10,15 +10,15 @@ package com.stang.tang.rubik.model;
  */
 public class Cube {
 	public static final int UP = 0;
-	public static final int FONT = 1;
+	public static final int FRONT = 1;
 	public static final int LEFT = 2;
 	public static final int BACK = 3;
 	public static final int RIGHT = 4;
 	public static final int DOWN = 5;
 	private static final int[] F = new int[] { UP, LEFT, DOWN, RIGHT };
-	private static final int[] R = new int[] { UP, FONT, DOWN, BACK };
-	private static final int[] U = new int[] { FONT, RIGHT, BACK, LEFT };
-	private static final int[] A = new int[] { UP, FONT, LEFT, BACK, RIGHT, DOWN };
+	private static final int[] R = new int[] { UP, FRONT, DOWN, BACK };
+	private static final int[] U = new int[] { FRONT, RIGHT, BACK, LEFT };
+	private static final int[] A = new int[] { UP, FRONT, LEFT, BACK, RIGHT, DOWN };
 	private Faceplate[] All = new Faceplate[A.length];
 
 	/**
@@ -77,7 +77,7 @@ public class Cube {
 	public Cube(Faceplate up, Faceplate down, Faceplate left, Faceplate right,
 			Faceplate font, Faceplate back) {
 		All[UP] = up;
-		All[FONT] = font;
+		All[FRONT] = font;
 		All[LEFT] = left;
 		All[BACK] = back;
 		All[RIGHT] = right;
@@ -100,8 +100,8 @@ public class Cube {
 		return All[RIGHT];
 	}
 
-	public Faceplate getFont() {
-		return All[FONT];
+	public Faceplate getFront() {
+		return All[FRONT];
 	}
 
 	public Faceplate getBack() {
@@ -174,10 +174,10 @@ public class Cube {
 	 * @param up
 	 * @return
 	 */
-	public boolean setFont(Faceplate font) {
+	public boolean setFront(Faceplate front) {
 		boolean res = false;
-		if (All[FONT] == null || All[FONT] == Faceplate.NONE) {
-			All[FONT] = font;
+		if (All[FRONT] == null || All[FRONT] == Faceplate.NONE) {
+			All[FRONT] = front;
 			res = true;
 		}
 		return res;
@@ -251,7 +251,7 @@ public class Cube {
 
 	public String show() {
 		return "UP:" + this.getUp().getName()
-				+ "\nFONT:" + this.getFont().getName()
+				+ "\nFONT:" + this.getFront().getName()
 				+ "\nLEFT:" + this.getLeft().getName()
 				+ "\nBACK:" + this.getBack().getName()
 				+ "\nRIGHT:" + this.getRight().getName()

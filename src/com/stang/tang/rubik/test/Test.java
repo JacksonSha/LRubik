@@ -5,19 +5,19 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+
 import com.stang.tang.rubik.model.Cube;
 import com.stang.tang.rubik.model.Faceplate;
 import com.stang.tang.rubik.model.RubikCube;
 import com.stang.tang.rubik.model.RubikCube2R;
 import com.stang.tang.rubik.model.RubikCube3R;
 import com.stang.tang.rubik.model.RubikException;
-import com.stang.tang.rubik.scan.RelativePoint;
-import com.stang.tang.rubik.scan.ScanFace;
-
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
+import com.stang.tang.rubik.model.RubikExlGenerator;
+import com.stang.tang.rubik.model.RubikGenerator;
 
 public class Test {
 	public static void test1() {
@@ -78,19 +78,19 @@ public class Test {
 		wbook = Workbook.createWorkbook(file);
 		RubikCube r = new RubikCube2R();
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("RU'R'U'F2U'RUR'DR2");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("Y");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("RU'R'U'F2U'RUR'DR2");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("R");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		System.out.print(r.isLayerOrderly(0));
 		System.out.println(r.isLayerOrderly(1));
 		try {
@@ -110,16 +110,16 @@ public class Test {
 		wbook = Workbook.createWorkbook(file);
 		RubikCube r = new RubikCube3R();
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("RU'RURURU'R'U'R2");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("R2URUR'U'R'U'R'UR'");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		r.turnSteps("R");
 		r.showMe();
-		r.showMe(wbook);
+//		r.showMe(wbook);
 		System.out.print(r.isLayerOrderly(0));
 		System.out.println(r.isLayerOrderly(1));
 		try {
@@ -171,9 +171,10 @@ public class Test {
 	public static void test7() throws BiffException, IOException{
 		Workbook wbook=Workbook.getWorkbook(new File("C:/Documents and Settings/jacsha/Desktop/rubik22.xls"));
 		WritableWorkbook wbook2=Workbook.createWorkbook(new File("C:/Documents and Settings/jacsha/Desktop/rubik23.xls"));
-		RubikCube r=new RubikCube(2,wbook,0,10,1);
+//		RubikCube r=new RubikCube(2,wbook,0,10,1);
+		RubikCube r=RubikExlGenerator.generate(2,wbook,0,10,1);
 		r.showMe();
-		r.showMe(wbook2);
+//		r.showMe(wbook2);
 		try {
 			wbook.close();
 			wbook2.write();
@@ -188,7 +189,8 @@ public class Test {
 		try {
 			wbook = Workbook.getWorkbook(new File(
 					"C:/Documents and Settings/jacsha/Desktop/rubik22.xls"));
-			RubikCube2R r = new RubikCube2R(wbook);
+//			RubikCube2R r = new RubikCube2R(wbook);
+			RubikCube2R r = (RubikCube2R) RubikExlGenerator.generate(2, wbook);
 			r.showMe();
 			String[] steps;
 			steps = r.recoverRubik();
@@ -205,10 +207,19 @@ public class Test {
 	}
 
 	public static void test9() {
+//		int[] as=new int[]{2,3,4};
+//		int[][] asd=new int[][]{{2,3,4},{3,34,4}};
+		int[][][] rubik =new int[][][]{{{0,0,0},{0,0,0},{0,0,0}},{{1,1,1},{1,1,1},{1,1,1}},{{2,2,2},{2,2,2},{2,2,2}},{{3,3,3},{3,3,3},{3,3,3}},{{4,4,4},{4,4,4},{4,4,4}},{{5,5,5},{5,5,5},{5,5,5}}};
+		rubik=new int[][][]{{{2,2,0},{0,2,0},{0,0,0}},{{1,1,0},{0,1,5},{1,0,1}},{{3,2,2},{2,2,2},{3,3,2}},{{5,3,5},{5,3,3},{3,5,3}},{{1,4,5},{1,4,1},{1,4,4}},{{5,5,1},{1,5,3},{3,2,3}}} ;
+		
+		RubikCube cube = RubikGenerator.generate(3, rubik);
+		RubikCube3R cube3=(RubikCube3R) cube;
+		cube.showMe();
+		cube3.showMe();
 	}
 
 	public static void main(String[] args) {
-		test3();
+		test9();
 	}
 
 }

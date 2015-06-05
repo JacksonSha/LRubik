@@ -2,8 +2,6 @@ package com.stang.tang.rubik.model;
 
 import java.util.regex.Pattern;
 
-import jxl.Workbook;
-
 /**
  * 四阶魔方
  * 
@@ -27,14 +25,6 @@ public class RubikCube4R extends RubikCube {
 		super(N, isNone);
 	}
 
-	public RubikCube4R(Workbook wbook) {
-		super(N, wbook);
-	}
-
-	public RubikCube4R(Workbook wbook, int sht, int beginRow, int beginColumn) {
-		super(N, wbook, sht, beginRow, beginColumn);
-	}
-
 	protected void execStep(String step) {
 		if (Pattern.matches(STEP_ONE_PATTERN.pattern(), step)) {
 			int turns = 1;
@@ -56,7 +46,7 @@ public class RubikCube4R extends RubikCube {
 				this.turnUp(turns);
 				break;
 			case 'F':
-				this.turnFont(turns);
+				this.turnFront(turns);
 				break;
 			case 'L':
 				this.turnLeft(turns);

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import jxl.Workbook;
-
 /**
  * 二阶魔方
  * 
@@ -172,12 +170,8 @@ public class RubikCube2R extends RubikCube implements Recovery {
 		super(N, isNone);
 	}
 
-	public RubikCube2R(Workbook wbook) {
-		super(N, wbook);
-	}
-
-	public RubikCube2R(Workbook wbook, int sht, int beginRow, int beginColumn) {
-		super(N, wbook, sht, beginRow, beginColumn);
+	public RubikCube2R(Cube[][][] rubik) {
+		super(rubik);
 	}
 
 	protected void execStep(String step) {
@@ -201,7 +195,7 @@ public class RubikCube2R extends RubikCube implements Recovery {
 				this.turnUp(turns);
 				break;
 			case 'F':
-				this.turnFont(turns);
+				this.turnFront(turns);
 				break;
 			case 'L':
 				this.turnLeft(turns);
@@ -276,12 +270,12 @@ public class RubikCube2R extends RubikCube implements Recovery {
 		faces[1][2] = corners[1].getBack();
 		
 		faces[2][0] = corners[2].getDown();
-		faces[2][1] = corners[2].getFont();
+		faces[2][1] = corners[2].getFront();
 		faces[2][2] = corners[2].getRight();
 		
 		faces[3][0] = corners[3].getDown();
 		faces[3][1] = corners[3].getLeft();
-		faces[3][2] = corners[3].getFont();
+		faces[3][2] = corners[3].getFront();
 		
 		faces[4][0] = corners[4].getUp();
 		faces[4][1] = corners[4].getBack();
@@ -292,12 +286,12 @@ public class RubikCube2R extends RubikCube implements Recovery {
 		faces[5][2] = corners[5].getBack();
 		
 		faces[6][0] = corners[6].getUp();
-		faces[6][1] = corners[6].getFont();
+		faces[6][1] = corners[6].getFront();
 		faces[6][2] = corners[6].getRight();
 		
 		faces[7][0] = corners[7].getUp();
 		faces[7][1] = corners[7].getLeft();
-		faces[7][2] = corners[7].getFont();
+		faces[7][2] = corners[7].getFront();
 		
 		return faces;
 	}
@@ -426,7 +420,7 @@ public class RubikCube2R extends RubikCube implements Recovery {
 			
 			if (UpFace == upLayer[N - 1][N - 1 - i].getUp()) {
 				oll[2 * (N - 1) + i] = 0;
-			} else if (UpFace == upLayer[N - 1][N - 1 - i].getFont()) {
+			} else if (UpFace == upLayer[N - 1][N - 1 - i].getFront()) {
 				oll[2 * (N - 1) + i] = 1;
 			} else if ((i % (N - 1) == 0)
 					&& UpFace == upLayer[N - 1][N - 1 - i].getRight()) {
@@ -440,7 +434,7 @@ public class RubikCube2R extends RubikCube implements Recovery {
 			} else if (UpFace == upLayer[N - 1 - i][0].getLeft()) {
 				oll[3 * (N - 1) + i] = 1;
 			} else if ((i % (N - 1) == 0)
-					&& UpFace == upLayer[N - 1 - i][0].getFont()) {
+					&& UpFace == upLayer[N - 1 - i][0].getFront()) {
 				oll[3 * (N - 1) + i] = 2;
 			} else {
 				throw new RubikException("Rubik cube wrong!!!");
@@ -509,12 +503,12 @@ public class RubikCube2R extends RubikCube implements Recovery {
 		for (int i = 0; i < N - 1; i++) {
 			upSideFace[i] = upLayer[0][i].getBack();
 			upSideFace[N - 1 + i] = upLayer[i][N - 1].getRight();
-			upSideFace[2 * (N - 1) + i] = upLayer[N - 1][N - 1 - i].getFont();
+			upSideFace[2 * (N - 1) + i] = upLayer[N - 1][N - 1 - i].getFront();
 			upSideFace[3 * (N - 1) + i] = upLayer[N - 1 - i][0].getLeft();
 			
 			downSideFace[i] = downLayer[0][i].getBack();
 			downSideFace[N - 1 + i] = downLayer[i][N - 1].getRight();
-			downSideFace[2 * (N - 1) + i] = downLayer[N - 1][N - 1 - i].getFont();
+			downSideFace[2 * (N - 1) + i] = downLayer[N - 1][N - 1 - i].getFront();
 			downSideFace[3 * (N - 1) + i] = downLayer[N - 1 - i][0].getLeft();
 		}
 		

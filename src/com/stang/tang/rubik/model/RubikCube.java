@@ -4,18 +4,6 @@ import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.write.Label;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-
 /**
  * 所有N阶(N*N*N)魔方的父类<br/>
  * 魔方块的信息存储为一个N*N*N的数组，以底层左后方的一个角块为坐标原点(0,0,0)，X轴从左向右，Y轴从后向前，Z轴从下向上
@@ -117,92 +105,6 @@ public class RubikCube {
 		}
 	}
 
-	public RubikCube(int n, Workbook wbook) {
-		this(n, wbook, 0, 1, 1);
-	}
-
-	/**
-	 * 从{@code wbook}这个excel文件里的第{@code sht}页的第{@code beginRow}行第
-	 * {@code beginColumn}列开始，加载阶数为{@code n}的魔方
-	 * <pre>
-	 * 加载顺序为
-	 * 	      上
-	 * 	   左 前 右 后
-	 * 	      下
-	 * </pre>
-	 * 
-	 * @param wbook
-	 * @param sht
-	 * @param beginRow
-	 * @param beginColumn
-	 * @param n
-	 * @return
-	 */
-	public RubikCube(int n, Workbook wbook, int sht, int beginRow,
-			int beginColumn) {
-		this(n, true);
-		if (n < 2 || wbook == null || wbook.getSheet(sht) == null || sht < 0
-				|| beginRow < 0 || beginColumn < 0) {
-			return;
-		}
-		Sheet sheet = wbook.getSheet(sht);
-		for (int i = 0; i < N; i++) {
-			//up
-			for (int j = N; j < 2 * N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[N - 1][i][j - N].setUp(getFaceplate(desc));
-			}
-		}
-		for (int i = N; i < 2 * N; i++) {
-			//left
-			for (int j = 0; j < N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[2 * N - 1 - i][j][0].setLeft(getFaceplate(desc));
-			}
-			//font
-			for (int j = N; j < 2 * N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[2 * N - 1 - i][N - 1][j - N].setFont(getFaceplate(desc));
-			}
-			//right
-			for (int j = 2 * N; j < 3 * N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[2 * N - 1 - i][3 * N - 1 - j][N - 1].setRight(getFaceplate(desc));
-			}
-			//back
-			for (int j = 3 * N; j < 4 * N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[2 * N - 1 - i][0][4 * N - 1 - j].setBack(getFaceplate(desc));
-			}
-		}
-		for (int i = 2 * N; i < 3 * N; i++) {
-			//down
-			for (int j = N; j < 2 * N; j++) {
-				Cell cell = sheet.getCell(beginColumn + j, beginRow + i);
-				String desc = cell.getCellFormat().getBackgroundColour().getDescription();
-				rubik[0][3 * N - 1 - i][j - N].setDown(getFaceplate(desc));
-			}
-		}
-	}
-
-	private Faceplate getFaceplate(String desc) {
-		if (desc != null) {
-			desc = desc.toLowerCase();
-			Faceplate[] faces = Faceplate.getAll();
-			for (int i = 0; i < faces.length; i++) {
-				if (desc.contains(faces[i].getDesc().toLowerCase())) {
-					return faces[i];
-				}
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * 返回魔方的阶数N
 	 * 
@@ -253,7 +155,7 @@ public class RubikCube {
 	 * 
 	 * @return
 	 */
-	public Cube[][] getFont() {
+	public Cube[][] getFront() {
 		return getLayer(Axis.YAxis, N - 1);
 	}
 
@@ -351,7 +253,7 @@ public class RubikCube {
 	 * 
 	 * @param turns
 	 */
-	public void turnFont(int turns) {
+	public void turnFront(int turns) {
 		turnYAxisClockwise(N - 1, turns);
 	}
 
@@ -703,7 +605,7 @@ public class RubikCube {
 				this.turnUp(turns);
 				break;
 			case 'F':
-				this.turnFont(turns);
+				this.turnFront(turns);
 				break;
 			case 'L':
 				this.turnLeft(turns);
@@ -742,7 +644,7 @@ public class RubikCube {
 			if (lCube[0][0].getLeft() != lCube[i][0].getLeft()
 					|| lCube[0][0].getBack() != lCube[0][i].getBack()
 					|| lCube[N - 1][N - 1].getRight() != lCube[i - 1][N - 1].getRight()
-					|| lCube[N - 1][N - 1].getFont() != lCube[N - 1][i - 1].getFont()) {
+					|| lCube[N - 1][N - 1].getFront() != lCube[N - 1][i - 1].getFront()) {
 				return false;
 			}
 		}
@@ -798,7 +700,7 @@ public class RubikCube {
 
 		Cube[][] faceUp = getUp();
 		Cube[][] faceLeft = getLeft();
-		Cube[][] faceFont = getFont();
+		Cube[][] faceFont = getFront();
 		Cube[][] faceRight = getRight();
 		Cube[][] faceBack = getBack();
 		Cube[][] faceDown = getDown();
@@ -821,7 +723,7 @@ public class RubikCube {
 			}
 			// font
 			for (int j = 0; j < N; j++) {
-				ps.printf(format, faceFont[(N - i - 1)][j].getFont().getName());
+				ps.printf(format, faceFont[(N - i - 1)][j].getFront().getName());
 			}
 			// right
 			for (int j = 0; j < N; j++) {
@@ -849,127 +751,6 @@ public class RubikCube {
 	private void printBlank(PrintStream ps, String blank) {
 		for (int i = 0; i < N; i++) {
 			ps.print(blank);
-		}
-	}
-
-	public void showMe(WritableWorkbook wbook) {
-		if (wbook == null) {
-			return;
-		}
-		try {
-			WritableSheet wsheet = wbook.getSheet("魔方平面图");
-			if (wsheet == null) {
-				wsheet = wbook.createSheet("魔方平面图", 0);
-			}
-			int rowBegin = wsheet.getRows();
-			WritableCellFormat cBackgroud = new WritableCellFormat();
-			cBackgroud.setBackground(Colour.WHITE);
-			wsheet.addCell(new Label(3 * (4 * N + 2), rowBegin + 3 * N + 2,
-					null, cBackgroud));
-
-			for (int i = rowBegin; i < wsheet.getRows(); i++) {
-				for (int j = 0; j < wsheet.getColumns(); j++) {
-					wsheet.addCell(new Label(j, i, null, cBackgroud));
-				}
-			}
-
-			WritableCellFormat[] cFormats = new WritableCellFormat[6];
-			Colour[] colours = new Colour[6];
-			colours[0] = Colour.YELLOW;
-			colours[1] = Colour.OCEAN_BLUE;
-			colours[2] = Colour.RED;
-			colours[3] = Colour.GREEN;
-			colours[4] = Colour.ORANGE;
-			colours[5] = Colour.WHITE;
-			for (int i = 0; i < 6; i++) {
-				cFormats[i] = new WritableCellFormat();
-				cFormats[i].setBackground(colours[i]);
-				cFormats[i].setBorder(Border.ALL, BorderLineStyle.THIN);
-			}
-
-			Cube[][] faceUp = getUp();
-			Cube[][] faceLeft = getLeft();
-			Cube[][] faceFont = getFont();
-			Cube[][] faceRight = getRight();
-			Cube[][] faceBack = getBack();
-			Cube[][] faceDown = getDown();
-
-			for (int i = 1; i < N + 1; i++) {
-				for (int j = N + 1; j < 2 * N + 1; j++) {
-					Faceplate plate = faceUp[i - 1][j - N - 1].getUp();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-			}
-
-			for (int i = N + 1; i < 2 * N + 1; i++) {
-				for (int j = 1; j < N + 1; j++) {
-					Faceplate plate = faceLeft[(2 * N - i)][j - 1].getLeft();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-				for (int j = N + 1; j < 2 * N + 1; j++) {
-					Faceplate plate = faceFont[(2 * N - i)][j - N - 1].getFont();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-				for (int j = 2 * N + 1; j < 3 * N + 1; j++) {
-					Faceplate plate = faceRight[(2 * N - i)][3 * N - j].getRight();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-				for (int j = 3 * N + 1; j < 4 * N + 1; j++) {
-					Faceplate plate = faceBack[(2 * N - i)][4 * N - j].getBack();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-			}
-
-			for (int i = 2 * N + 1; i < 3 * N + 1; i++) {
-				for (int j = N + 1; j < 2 * N + 1; j++) {
-					Faceplate plate = faceDown[3 * N - i][j - N - 1].getDown();
-					WritableCellFormat cell = getCellFormat(plate, cFormats);
-					Label lab = new Label(j, rowBegin + i, null, cell);
-					wsheet.addCell(lab);
-				}
-			}
-
-			for (int i = rowBegin; i < wsheet.getRows(); i++) {
-				wsheet.setRowView(i, 1000);
-			}
-			for (int j = rowBegin; j < wsheet.getColumns(); j++) {
-				wsheet.setColumnView(j, 10);
-			}
-		} catch (WriteException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private WritableCellFormat getCellFormat(Faceplate plate,
-			WritableCellFormat[] cFormats) {
-		switch (plate) {
-		case YELLOW:
-			return cFormats[0];
-		case BLUE:
-			return cFormats[1];
-		case RED:
-			return cFormats[2];
-		case GREEN:
-			return cFormats[3];
-		case ORANGE:
-			return cFormats[4];
-		case WHITE:
-			return cFormats[5];
-		case NONE:
-			return null;
-		default:
-			return null;
 		}
 	}
 
